@@ -21,6 +21,10 @@ class User(Base):
         session.commit()
         return user
 
+    def update(self, session, name):
+        self.name = name
+        session.commit()
+
     @classmethod
     def delete(cls, session, user_id):
         user = session.query(cls).get(user_id)
