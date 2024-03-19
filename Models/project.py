@@ -1,31 +1,33 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-class User(Base):
-    __tablename__ = 'users'
+class Project(Base):
+    __tablename__ = 'projects'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    projects = relationship('Project', back_populates='user')
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship('User', back_populates='projects')
+    tasks = relationship('Task', back_populates='project')
 
     def __repr__(self):
-        return f"User(id={self.id}, name='{self.name}')"
+        return f"Project(id={self.id}, name='{self.name}', user_id={self.user_id})"
 
     @classmethod
-    def create(cls, session, name):
-        user = cls(name=name)
-        session.add(user)
+    def create(cls, session, name, user_id):
+        project = cls(name=name, user_id=user_id)
+        session.add(project)
         session.commit()
-        return user
+        return project
 
     @classmethod
-    def delete(cls, session, user_id):
-        user = session.query(cls).get(user_id)
-        if user:
-            session.delete(user)
+    def delete(cls, session, project_id):
+        project = session.query(cls).get(project_id)
+        if project:
+            session.delete(project)
             session.commit()
             return True
         return False
@@ -35,8 +37,8 @@ class User(Base):
         return session.query(cls).all()
 
     @classmethod
-    def find_by_id(cls, session, user_id):
-        return session.query(cls).get(user_id)
+    def find_by_id(cls, session, project_id):
+        return session.query(cls).get(project_id)
 
     @classmethod
     def find_by_name(cls, session, name):
