@@ -22,6 +22,11 @@ class Task(Base):
         session.commit()
         return task
 
+    def update(self, session, description, project_id):
+        self.description = description
+        self.project_id = project_id
+        session.commit()
+
     @classmethod
     def delete(cls, session, task_id):
         task = session.query(cls).get(task_id)
