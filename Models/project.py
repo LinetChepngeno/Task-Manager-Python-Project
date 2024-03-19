@@ -23,6 +23,11 @@ class Project(Base):
         session.commit()
         return project
 
+    def update(self, session, name, user_id):
+        self.name = name
+        self.user_id = user_id
+        session.commit()
+
     @classmethod
     def delete(cls, session, project_id):
         project = session.query(cls).get(project_id)
