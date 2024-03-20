@@ -162,3 +162,80 @@ def find_user(session):
             print(f"No user found with name '{name}'.")
     else:
         print("Invalid choice.")
+
+# Project CRUD Operations
+def create_project(session):
+    name = input("Enter the project name: ")
+    user_id = int(input("Enter the user ID for the project: "))
+    user = User.find_by_id(session, user_id)
+    if user:
+        project = Project.create(session, name, user_id)
+        print(f"Project created: {project}")
+    else:
+        print(f"User with ID {user_id} not found.")
+
+def update_project(session):
+    project_id = int(input("Enter the project ID: "))
+    project = Project.find_by_id(session, project_id)
+    if project:
+        new_name = input(f"Enter the new name for project '{project.name}': ")
+        new_user_id = int(input("Enter the new user ID for the project: "))
+        new_user = User.find_by_id(session, new_user_id)
+        if new_user:
+            project.update(session, new_name, new_user_id)
+            print(f"Project with ID {project_id} has been updated.")
+        else:
+            print(f"User with ID {new_user_id} not found.")
+    else:
+        print(f"Project with ID {project_id} not found.")
+
+def delete_project(session):
+    project_id = int(input("Enter the project ID: "))
+    if Project.delete(session, project_id):
+        print(f"Project with ID {project_id} has been deleted.")
+    else:
+        print(f"Project with ID {project_id} not found.")
+
+def view_all_projects(session):
+    projects = Project.get_all(session)
+    if projects:
+        for project in projects:
+            print(project)
+    else:
+        print("No projects found.")
+
+def find_project(session):
+    print("1. Find by ID")
+    print("2. Find by Name")
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        project_id = int(input("Enter project ID: "))
+        project = Project.find_by_id(session, project_id)
+        if project:
+            print(project)
+        else:
+            print(f"Project with ID {project_id} not found.")
+    elif choice == "2":
+        name = input("Enter project name: ")
+        project = Project.find_by_name(session, name)
+        if project:
+            print(project)
+        else:
+            print(f"No project found with name '{name}'.")
+    else:
+        print("Invalid choice.")
+
+def view_tasks_for_project(session):
+    project_id = int(input("Enter the project ID: "))
+    project = Project.find_by_id(session, project_id)
+    if project:
+        tasks = project.tasks
+        if tasks:
+            print(f"Tasks for project '{project.name}':")
+            for task in tasks:
+                print(task)
+        else:
+            print(f"No tasks found for project '{project.name}'.")
+    else:
+        print(f"Project with ID {project_id} not found.")
