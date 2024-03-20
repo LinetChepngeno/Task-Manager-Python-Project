@@ -54,3 +54,58 @@ def manage_users(session):
             break
         else:
             print("Invalid choice. Please try again.")
+
+def manage_projects(session):
+    while True:
+        print("\nManage Projects")
+        print("1. Create Project")
+        print("2. Update Project")
+        print("3. Delete Project")
+        print("4. View All Projects")
+        print("5. Find Project")
+        print("6. View Tasks for a Project")
+        print("7. Back to Main Menu")
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            create_project(session)
+        elif choice == "2":
+            update_project(session)
+        elif choice == "3":
+            delete_project(session)
+        elif choice == "4":
+            view_all_projects(session)
+        elif choice == "5":
+            find_project(session)
+        elif choice == "6":
+            view_tasks_for_project(session)
+        elif choice == "7":
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+def manage_tasks(session):
+    while True:
+        print("\nManage Tasks")
+        print("1. Create Task")
+        print("2. Update Task")
+        print("3. Delete Task")
+        print("4. View All Tasks")
+        print("5. Find Task")
+        print("6. Back to Main Menu")
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            create_task(session)
+        elif choice == "2":
+            update_task(session)
+        elif choice == "3":
+            delete_task(session)
+        elif choice == "4":
+            view_all_tasks(session)
+        elif choice == "5":
+            find_task(session)
+        elif choice == "6":
+            break
+        else:
+            print("Invalid choice. Please try again.")
