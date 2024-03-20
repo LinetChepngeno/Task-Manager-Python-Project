@@ -109,3 +109,56 @@ def manage_tasks(session):
             break
         else:
             print("Invalid choice. Please try again.")
+
+# User CRUD Operations
+def create_user(session):
+    name = input("Enter the user's name: ")
+    user = User.create(session, name)
+    print(f"User created: {user}")
+
+def update_user(session):
+    user_id = int(input("Enter the user's ID: "))
+    user = User.find_by_id(session, user_id)
+    if user:
+        new_name = input(f"Enter the new name for user '{user.name}': ")
+        user.update(session, new_name)
+        print(f"User with ID {user_id} has been updated.")
+    else:
+        print(f"User with ID {user_id} not found.")
+
+def delete_user(session):
+    user_id = int(input("Enter the user's ID: "))
+    if User.delete(session, user_id):
+        print(f"User with ID {user_id} has been deleted.")
+    else:
+        print(f"User with ID {user_id} not found.")
+
+def view_all_users(session):
+    users = User.get_all(session)
+    if users:
+        for user in users:
+            print(user)
+    else:
+        print("No users found.")
+
+def find_user(session):
+    print("1. Find by ID")
+    print("2. Find by Name")
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        user_id = int(input("Enter user ID: "))
+        user = User.find_by_id(session, user_id)
+        if user:
+            print(user)
+        else:
+            print(f"User with ID {user_id} not found.")
+    elif choice == "2":
+        name = input("Enter user name: ")
+        user = User.find_by_name(session, name)
+        if user:
+            print(user)
+        else:
+            print(f"No user found with name '{name}'.")
+    else:
+        print("Invalid choice.")
