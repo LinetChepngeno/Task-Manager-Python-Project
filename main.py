@@ -239,3 +239,69 @@ def view_tasks_for_project(session):
             print(f"No tasks found for project '{project.name}'.")
     else:
         print(f"Project with ID {project_id} not found.")
+
+# Task CRUD Operations
+def create_task(session):
+    description = input("Enter the task description: ")
+    project_id = int(input("Enter the project ID for the task: "))
+    project = Project.find_by_id(session, project_id)
+    if project:
+        task = Task.create(session, description, project_id)
+        print(f"Task created: {task}")
+    else:
+        print(f"Project with ID {project_id} not found.")
+
+def update_task(session):
+    task_id = int(input("Enter the task ID: "))
+    task = Task.find_by_id(session, task_id)
+    if task:
+        new_description = input(f"Enter the new description for task '{task.description}': ")
+        new_project_id = int(input("Enter the new project ID for the task: "))
+        new_project = Project.find_by_id(session, new_project_id)
+        if new_project:
+            task.update(session, new_description, new_project_id)
+            print(f"Task with ID {task_id} has been updated.")
+        else:
+            print(f"Project with ID {new_project_id} not found.")
+    else:
+        print(f"Task with ID {task_id} not found.")
+
+def delete_task(session):
+    task_id = int(input("Enter the task ID: "))
+    if Task.delete(session, task_id):
+        print(f"Task with ID {task_id} has been deleted.")
+    else:
+        print(f"Task with ID {task_id} not found.")
+
+def view_all_tasks(session):
+    tasks = Task.get_all(session)
+    if tasks:
+        for task in tasks:
+            print(task)
+    else:
+        print("No tasks found.")
+
+def find_task(session):
+    print("1. Find by ID")
+    print("2. Find by Description")
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        task_id = int(input("Enter task ID: "))
+        task = Task.find_by_id(session, task_id)
+        if task:
+            print(task)
+        else:
+            print(f"Task with ID {task_id} not found.")
+    elif choice == "2":
+        description = input("Enter task description: ")
+        task = Task.find_by_description(session, description)
+        if task:
+            print(task)
+        else:
+            print(f"No task found with description '{description}'.")
+    else:
+        print("Invalid choice.")
+
+if __name__ == "__main__":
+    main()
