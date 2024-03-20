@@ -30,3 +30,14 @@ class Project(Base):
         return f'<Project(name="{self.name}", owner="{self.owner.username}")>'
 
 class Task(Base):
+    __tablename__ = 'tasks'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    description = Column(Text)
+    due_date = Column(DateTime)
+    project_id = Column(Integer, ForeignKey('projects.id'), nullable=False)
+    project = relationship('Project', back_populates='tasks')
+
+    def __repr__(self):
+        return f'<Task(name="{self.name}", project="{self.project.name}")>'
