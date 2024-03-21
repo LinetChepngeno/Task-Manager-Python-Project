@@ -1,10 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from Models.project import Project
-from Models.user import User
-from Models.task import Task
+from Models.task_manager_orm_cli import Base, User, Project, Task
 
-engine = create_engine('sqlite:///db/database.db')
+engine = create_engine('sqlite:///taskmanager.db')
+
 Session = sessionmaker(bind=engine)
 
 def main():
