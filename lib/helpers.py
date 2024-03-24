@@ -1,120 +1,12 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from Models.task_manager_orm_cli import Base, User, Project, Task
+from models.task_manager import TaskManager, Task, Project, User
 
-engine = create_engine('sqlite:///taskmanager.db')
 
-Session = sessionmaker(bind=engine)
-
-def main():
-    session = Session()
-
-    while True:
-        print("\nTask Manager")
-        print("1. Manage Users")
-        print("2. Manage Projects")
-        print("3. Manage Tasks")
-        print("4. Exit")
-        choice = input("Enter your choice: ")
-
-        if choice == "1":
-            manage_users(session)
-        elif choice == "2":
-            manage_projects(session)
-        elif choice == "3":
-            manage_tasks(session)
-        elif choice == "4":
-            break
-        else:
-            print("Invalid choice. Please try again.")
-
-    session.close()
-
-def manage_users(session):
-    while True:
-        print("\nManage Users")
-        print("1. Create User")
-        print("2. Update User")
-        print("3. Delete User")
-        print("4. View All Users")
-        print("5. Find User")
-        print("6. Back to Main Menu")
-        choice = input("Enter your choice: ")
-
-        if choice == "1":
-            create_user(session)
-        elif choice == "2":
-            update_user(session)
-        elif choice == "3":
-            delete_user(session)
-        elif choice == "4":
-            view_all_users(session)
-        elif choice == "5":
-            find_user(session)
-        elif choice == "6":
-            break
-        else:
-            print("Invalid choice. Please try again.")
-
-def manage_projects(session):
-    while True:
-        print("\nManage Projects")
-        print("1. Create Project")
-        print("2. Update Project")
-        print("3. Delete Project")
-        print("4. View All Projects")
-        print("5. Find Project")
-        print("6. View Tasks for a Project")
-        print("7. Back to Main Menu")
-        choice = input("Enter your choice: ")
-
-        if choice == "1":
-            create_project(session)
-        elif choice == "2":
-            update_project(session)
-        elif choice == "3":
-            delete_project(session)
-        elif choice == "4":
-            view_all_projects(session)
-        elif choice == "5":
-            find_project(session)
-        elif choice == "6":
-            view_tasks_for_project(session)
-        elif choice == "7":
-            break
-        else:
-            print("Invalid choice. Please try again.")
-
-def manage_tasks(session):
-    while True:
-        print("\nManage Tasks")
-        print("1. Create Task")
-        print("2. Update Task")
-        print("3. Delete Task")
-        print("4. View All Tasks")
-        print("5. Find Task")
-        print("6. Back to Main Menu")
-        choice = input("Enter your choice: ")
-
-        if choice == "1":
-            create_task(session)
-        elif choice == "2":
-            update_task(session)
-        elif choice == "3":
-            delete_task(session)
-        elif choice == "4":
-            view_all_tasks(session)
-        elif choice == "5":
-            find_task(session)
-        elif choice == "6":
-            break
-        else:
-            print("Invalid choice. Please try again.")
+task_manager=TaskManager()
 
 # User CRUD Operations
 def create_user(session):
     name = input("Enter the user's name: ")
-    user = User.create(session, name)
+    user = User.create(session,name)
     print(f"User created: {user}")
 
 def update_user(session):
@@ -304,5 +196,3 @@ def find_task(session):
     else:
         print("Invalid choice.")
 
-if __name__ == "__main__":
-    main()

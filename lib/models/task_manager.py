@@ -4,6 +4,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+# Create the database tables
+engine = create_engine('sqlite:///taskmanager.db')
+Session = sessionmaker(bind=engine)
+
 Base = declarative_base()
 
 class Task(Base):
@@ -12,6 +16,7 @@ class Task(Base):
     id = Column(Integer, primary_key=True)
     description = Column(String)
     project_id = Column(Integer, ForeignKey('projects.id'))
+
     project = relationship('Project', back_populates='tasks')
 
     def __repr__(self):
@@ -55,23 +60,24 @@ class Project(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    owner_id = Column(Integer, ForeignKey('users.id'))
-    owner = relationship('User', back_populates='projects')
+    user_id = Column(Integer, ForeignKey('users.id'))
+
+    user = relationship('User', back_populates='projects')
     tasks = relationship('Task', back_populates='project')
 
     def __repr__(self):
-        return f"Project(id={self.id}, name='{self.name}', owner_id={self.owner_id})"
+        return f"Project(id={self.id}, name='{self.name}', user_id={self.user_id})"
 
     @classmethod
-    def create(cls, session, name, owner_id):
-        project = cls(name=name, owner_id=owner_id)
+    def create(cls, session, name,user_id):
+        project = cls(name=name, user_id=user_id)
         session.add(project)
         session.commit()
         return project
 
-    def update(self, session, name, owner_id):
+    def update(self, session, name, user_id):
         self.name = name
-        self.owner_id = owner_id
+        self.user_id = user_id
         session.commit()
 
     @classmethod
@@ -100,7 +106,8 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    projects = relationship('Project', back_populates='owner', lazy="subquery")
+
+    projects = relationship('Project', back_populates='user', lazy="subquery")
 
     def __repr__(self):
         return f"User(id={self.id}, name='{self.name}')"
@@ -137,13 +144,76 @@ class User(Base):
     def find_by_name(cls, session, name):
         return session.query(cls).filter(cls.name == name).first()
     
-# Create the database tables
-engine = create_engine('sqlite:///taskmanager.db')
-Base.metadata.create_all(engine)
+class TaskManager:
+    def __init__(self):
+        self.session = Session()
 
-# Create a new session
-Session = sessionmaker(bind=engine)
-session = Session()
+    def add_project(self, project_name, user_id):
+        if not project_name or not user_id:
+            print("Error: Project_name and user_id are required!")
+            return
 
-#use the session to perform CRUD operations on your models
-user = User.create(session, 'test')
+        user = self.session.query(User).get(user_id)
+        if not user:
+            print(f"Error: User with id {user_id} not found!")
+            return
+
+        project = Project(name=project_name, user_id=user_id)
+        try:
+            self.session.add(project)
+            self.session.commit()
+            print("Project Added Successfully")
+        except Exception as e:
+            self.session.rollback()
+            print(f'Error: {e}')
+
+    def add_user(self, first_name, last_name, email):
+        if not first_name or not last_name or not email:
+            print("Error: First Name, Last Name, and email are required!")
+            return
+        
+        existing_user = self.session.query(User).filter_by(email=email).first()
+        if existing_user:
+            print(f"Error: User with email '{email}' already exists.")
+
+        user = User(first_name=first_name, last_name=last_name, email=email)
+        
+        try:
+            self.session.add(user)
+            self.session.commit()
+            print("User Added Successfully")
+        except Exception as e:
+            self.session.rollback()
+            print(f'Error: {e}')
+        
+    def assign_user_to_project(self, user_id, project_id):
+        user = self.session.get(User, user_id)
+        project = self.session.get(Project, project_id) 
+
+        if not user:
+            print(f"Error: User with id {user_id} not found!")
+            return
+
+        if not project:
+            print(f"Error: Project with id {project_id} not found!")
+            return
+
+        project.user_id = user_id
+        try:
+            self.session.commit()
+            print("User assigned to the project successfully!")
+        except Exception as e:
+            self.session.rollback()
+            print(f'Error: {e}')
+
+    def get_all_projects(self):
+        return self.session.query(Project).all()
+
+    def get_all_tasks(self):
+        return self.session.query(Task).all()
+
+    def get_all_users(self):
+        return self.session.query(User).all()
+    
+
+
